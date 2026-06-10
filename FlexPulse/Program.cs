@@ -10,7 +10,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<FlexPulse.Data.ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Add Identity with role support
 builder.Services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<FlexPulse.Data.ApplicationDbContext>();
 
 var app = builder.Build();

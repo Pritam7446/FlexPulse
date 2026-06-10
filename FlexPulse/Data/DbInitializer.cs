@@ -41,6 +41,18 @@ public static class DbInitializer
             }
         }
 
+        // Ensure roles and assign demo user to Member role
+        var roleManager = scoped.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
+        var memberRole = "Member";
+        if (!roleManager.RoleExistsAsync(memberRole).GetAwaiter().GetResult())
+        {
+            roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(memberRole)).GetAwaiter().GetResult();
+        }
+        if (!userManager.IsInRoleAsync(demoUser, memberRole).GetAwaiter().GetResult())
+        {
+            userManager.AddToRoleAsync(demoUser, memberRole).GetAwaiter().GetResult();
+        }
+
         var logs = new List<WorkoutLog>
         {
             new WorkoutLog { UserId = demoUser.Id, ExerciseId = exercises[0].Id, Date = DateTime.UtcNow.Date.AddDays(-2), DurationMinutes = 45, CaloriesBurned = 350 },
