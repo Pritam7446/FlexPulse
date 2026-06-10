@@ -17,17 +17,15 @@ namespace FlexPulse.Controllers
 
         public IActionResult Index()
         {
-            var totalSessions = _db.WorkoutLogs.Count();
-            var activeMinutes = _db.WorkoutLogs.Sum(w => w.DurationMinutes);
-            var calories = _db.WorkoutLogs.Sum(w => w.CaloriesBurned);
+            var vm = new FlexPulse.ViewModels.DashboardViewModel
+            {
+                TotalSessions = _db.WorkoutLogs.Count(),
+                ActiveMinutes = _db.WorkoutLogs.Sum(w => w.DurationMinutes),
+                Calories = _db.WorkoutLogs.Sum(w => w.CaloriesBurned),
+                Exercises = _db.Exercises.ToList()
+            };
 
-            ViewData["TotalSessions"] = totalSessions;
-            ViewData["ActiveMinutes"] = activeMinutes;
-            ViewData["Calories"] = calories;
-
-            ViewData["Exercises"] = _db.Exercises.ToList();
-
-            return View();
+            return View(vm);
         }
 
         public IActionResult Privacy()

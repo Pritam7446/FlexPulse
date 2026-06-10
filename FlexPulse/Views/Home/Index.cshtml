@@ -1,4 +1,5 @@
-﻿@{
+﻿@model FlexPulse.ViewModels.DashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
 }
 
@@ -10,7 +11,7 @@
             <div class="card text-white bg-primary mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Total Sessions</h5>
-                    <p class="card-text display-6">@ViewData["TotalSessions"]</p>
+                    <p class="card-text display-6">@Model.TotalSessions</p>
                 </div>
             </div>
         </div>
@@ -18,7 +19,7 @@
             <div class="card text-white bg-success mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Active Minutes</h5>
-                    <p class="card-text display-6">@ViewData["ActiveMinutes"]</p>
+                    <p class="card-text display-6">@Model.ActiveMinutes</p>
                 </div>
             </div>
         </div>
@@ -26,7 +27,7 @@
             <div class="card text-white bg-danger mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Calories Burned</h5>
-                    <p class="card-text display-6">@ViewData["Calories"]</p>
+                    <p class="card-text display-6">@Model.Calories</p>
                 </div>
             </div>
         </div>
@@ -42,7 +43,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var ex in (List<FlexPulse.Models.Exercise>)ViewData["Exercises"]) {
+            @foreach (var ex in Model.Exercises) {
                 <tr>
                     <td>@ex.Name</td>
                     <td>@ex.MuscleGroup</td>
