@@ -1,0 +1,82 @@
+@model FlexPulse.Models.WorkoutLog
+@{
+    ViewData["Title"] = "Add Workout Log";
+    var exercises = (List<FlexPulse.Models.Exercise>)ViewData["Exercises"]!;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post" id="createWorkoutForm">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="ExerciseId" class="form-label">@Html.DisplayNameFor(m => m.ExerciseId)</label>
+        <select asp-for="ExerciseId" class="form-select">
+            @foreach(var ex in exercises){
+                <option value="@ex.Id">@ex.Name</option>
+            }
+        </select>
+        <span asp-validation-for="ExerciseId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Date" class="form-label">@Html.DisplayNameFor(m => m.Date)</label>
+        <input asp-for="Date" class="form-control" type="date" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="DurationMinutes" class="form-label">@Html.DisplayNameFor(m => m.DurationMinutes)</label>
+        <input asp-for="DurationMinutes" class="form-control" />
+        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CaloriesBurned" class="form-label">@Html.DisplayNameFor(m => m.CaloriesBurned)</label>
+        <input asp-for="CaloriesBurned" class="form-control" readonly />
+        <span asp-validation-for="CaloriesBurned" class="text-danger"></span>
+    </div>
+</form>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm save</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to save this workout log?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-3">
+    <button type="button" class="btn btn-primary" id="openConfirmBtn">Save</button>
+</div>
+
+<script>
+    (function(){
+        var exercises = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(exercises.ToDictionary(e => e.Id, e => e.CaloriesPerMinute)));
+
+        function updateEstimated() {
+            var sel = document.querySelector('[name="ExerciseId"]');
+            var dur = document.querySelector('[name="DurationMinutes"]');
+            var cal = document.querySelector('[name="CaloriesBurned"]');
+            if (!sel || !dur || !cal) return;
+            var perMin = parseFloat(exercises[sel.value]) || 0;
+            var minutes = parseFloat(dur.value) || 0;
+            cal.value = Math.round(perMin * minutes);
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            var sel = document.querySelector('[name="ExerciseId"]');
+            var dur = document.querySelector('[name="DurationMinutes"]');
+            if (sel) sel.addEventListener('change', updateEstimated);
+            if (dur) dur.addEventListener('input', updateEstimated);
+            updateEstimated();
+        });
+    })();
+</script>

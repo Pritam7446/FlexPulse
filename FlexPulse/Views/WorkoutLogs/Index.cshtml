@@ -1,0 +1,37 @@
+@model List<FlexPulse.Models.WorkoutLog>
+@{
+    ViewData["Title"] = "Your Workout Logs";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add Log</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Exercise</th>
+            <th>Duration</th>
+            <th>Calories</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var log in Model)
+        {
+            <tr>
+                <td>@log.Date.ToShortDateString()</td>
+                <td>@log.Exercise?.Name</td>
+                <td>@log.DurationMinutes</td>
+                <td>@log.CaloriesBurned</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@log.Id" class="btn btn-sm btn-primary me-1">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@log.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
