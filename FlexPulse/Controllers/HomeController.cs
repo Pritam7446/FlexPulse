@@ -1,6 +1,7 @@
 using FlexPulse.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlexPulse.Controllers
 {
@@ -8,21 +9,46 @@ namespace FlexPulse.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly FlexPulse.Data.ApplicationDbContext _db;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, FlexPulse.Data.ApplicationDbContext db)
+        public HomeController(ILogger<HomeController> logger, FlexPulse.Data.ApplicationDbContext db, Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> userManager)
         {
             _logger = logger;
             _db = db;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            int totalSessions = 0;
+            int activeMinutes = 0;
+            int calories = 0;
+
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var userLogs = _db.WorkoutLogs.Where(w => w.UserId == user.Id);
+                    totalSessions = await userLogs.CountAsync();
+                    activeMinutes = await userLogs.SumAsync(w => (int?)w.DurationMinutes) ?? 0;
+                    calories = await userLogs.SumAsync(w => (int?)w.CaloriesBurned) ?? 0;
+                }
+            }
+            else
+            {
+                // anonymous: show global totals
+                totalSessions = await _db.WorkoutLogs.CountAsync();
+                activeMinutes = await _db.WorkoutLogs.SumAsync(w => (int?)w.DurationMinutes) ?? 0;
+                calories = await _db.WorkoutLogs.SumAsync(w => (int?)w.CaloriesBurned) ?? 0;
+            }
+
             var vm = new FlexPulse.ViewModels.DashboardViewModel
             {
-                TotalSessions = _db.WorkoutLogs.Count(),
-                ActiveMinutes = _db.WorkoutLogs.Sum(w => w.DurationMinutes),
-                Calories = _db.WorkoutLogs.Sum(w => w.CaloriesBurned),
-                Exercises = _db.Exercises.ToList()
+                TotalSessions = totalSessions,
+                ActiveMinutes = activeMinutes,
+                Calories = calories,
+                Exercises = await _db.Exercises.ToListAsync()
             };
 
             return View(vm);

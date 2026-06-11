@@ -16,6 +16,7 @@
             <th>Exercise</th>
             <th>Duration</th>
             <th>Calories</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -26,6 +27,10 @@
                 <td>@log.Exercise?.Name</td>
                 <td>@log.DurationMinutes</td>
                 <td>@log.CaloriesBurned</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@log.Id" class="btn btn-sm btn-primary me-1">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@log.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
             </tr>
         }
     </tbody>

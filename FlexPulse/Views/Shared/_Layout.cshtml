@@ -22,16 +22,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @inject Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> UserManager
                         @if (User?.Identity?.IsAuthenticated ?? false)
                         {
-                            var isMember = UserManager.IsInRoleAsync(UserManager.GetUserAsync(User).GetAwaiter().GetResult(), "Member").GetAwaiter().GetResult();
-                            if (isMember)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="WorkoutLogs" asp-action="Index">Workout Log</a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="WorkoutLogs" asp-action="Index">Workout Log</a>
+                            </li>
                         }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

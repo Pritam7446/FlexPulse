@@ -3,11 +3,27 @@
 
 // Write your JavaScript code.
 document.addEventListener('DOMContentLoaded', function () {
-  var createForm = document.querySelector('form[action$="/WorkoutLogs/Create"]') || document.querySelector('form[action*="WorkoutLogs/Create"]');
+  var createForm = document.getElementById('createWorkoutForm');
   if (createForm) {
-    createForm.addEventListener('submit', function (e) {
-      var confirmed = confirm('Save this workout log?');
-      if (!confirmed) e.preventDefault();
-    });
+    var openBtn = document.getElementById('openConfirmBtn');
+    var confirmBtn = document.getElementById('confirmSaveBtn');
+    var confirmModalEl = document.getElementById('confirmModal');
+    var confirmModal = null;
+    if (confirmModalEl) {
+      confirmModal = new bootstrap.Modal(confirmModalEl);
+    }
+
+    if (openBtn && confirmModal) {
+      openBtn.addEventListener('click', function (e) {
+        confirmModal.show();
+      });
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', function () {
+        // submit the form programmatically
+        createForm.submit();
+      });
+    }
   }
 });

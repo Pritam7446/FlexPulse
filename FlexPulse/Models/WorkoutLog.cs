@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FlexPulse.Models;
 
@@ -7,8 +8,9 @@ public class WorkoutLog
 {
     public int Id { get; set; }
 
-    [Required]
-    public string UserId { get; set; } = null!; // For Identity linkage
+    // UserId is assigned server-side from the authenticated user; do not bind from the client form
+    [BindNever]
+    public string? UserId { get; set; }
 
     [Required]
     public int ExerciseId { get; set; }

@@ -15,18 +15,40 @@ public static class DbInitializer
 
         context.Database.Migrate();
 
-        if (context.Exercises.Any())
-            return; // already seeded
-
-        var exercises = new List<Exercise>
+        if (!context.Exercises.Any())
         {
-            new Exercise { Name = "Squat", MuscleGroup = "Legs", Equipment = "Barbell" },
-            new Exercise { Name = "Bench Press", MuscleGroup = "Chest", Equipment = "Barbell" },
-            new Exercise { Name = "Pull Up", MuscleGroup = "Back", Equipment = "Bodyweight" }
-        };
+            var exercises = new List<Exercise>
+            {
+                new Exercise { Name = "Squat", MuscleGroup = "Legs", Equipment = "Barbell", CaloriesPerMinute = 8.0 },
+                new Exercise { Name = "Bench Press", MuscleGroup = "Chest", Equipment = "Barbell", CaloriesPerMinute = 7.0 },
+                new Exercise { Name = "Pull Up", MuscleGroup = "Back", Equipment = "Bodyweight", CaloriesPerMinute = 6.5 }
+            };
 
-        context.Exercises.AddRange(exercises);
-        context.SaveChanges();
+            context.Exercises.AddRange(exercises);
+            context.SaveChanges();
+        }
+        else
+        {
+            // If the CaloriesPerMinute column was added after initial seeding, update existing rows with sensible defaults if unset
+            var nameMap = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Squat", 8.0 },
+                { "Bench Press", 7.0 },
+                { "Pull Up", 6.5 }
+            };
+
+            var existing = context.Exercises.Where(e => e.CaloriesPerMinute == 0.0).ToList();
+            var changed = false;
+            foreach (var ex in existing)
+            {
+                if (nameMap.TryGetValue(ex.Name, out var val))
+                {
+                    ex.CaloriesPerMinute = val;
+                    changed = true;
+                }
+            }
+            if (changed) context.SaveChanges();
+        }
 
         // Create a demo Identity user
         var demoEmail = "demo@flexpulse.local";
@@ -53,14 +75,19 @@ public static class DbInitializer
             userManager.AddToRoleAsync(demoUser, memberRole).GetAwaiter().GetResult();
         }
 
-        var logs = new List<WorkoutLog>
+        // Seed demo logs referencing exercises from the database
+        var dbExercises = context.Exercises.OrderBy(e => e.Id).Take(3).ToList();
+        if (dbExercises.Count >= 3)
         {
-            new WorkoutLog { UserId = demoUser.Id, ExerciseId = exercises[0].Id, Date = DateTime.UtcNow.Date.AddDays(-2), DurationMinutes = 45, CaloriesBurned = 350 },
-            new WorkoutLog { UserId = demoUser.Id, ExerciseId = exercises[1].Id, Date = DateTime.UtcNow.Date.AddDays(-1), DurationMinutes = 30, CaloriesBurned = 250 },
-            new WorkoutLog { UserId = demoUser.Id, ExerciseId = exercises[2].Id, Date = DateTime.UtcNow.Date, DurationMinutes = 20, CaloriesBurned = 150 }
-        };
+            var logs = new List<WorkoutLog>
+            {
+                new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[0].Id, Date = DateTime.UtcNow.Date.AddDays(-2), DurationMinutes = 45, CaloriesBurned = (int)Math.Round(dbExercises[0].CaloriesPerMinute * 45) },
+                new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[1].Id, Date = DateTime.UtcNow.Date.AddDays(-1), DurationMinutes = 30, CaloriesBurned = (int)Math.Round(dbExercises[1].CaloriesPerMinute * 30) },
+                new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[2].Id, Date = DateTime.UtcNow.Date, DurationMinutes = 20, CaloriesBurned = (int)Math.Round(dbExercises[2].CaloriesPerMinute * 20) }
+            };
 
-        context.WorkoutLogs.AddRange(logs);
-        context.SaveChanges();
+            context.WorkoutLogs.AddRange(logs);
+            context.SaveChanges();
+        }
     }
 }

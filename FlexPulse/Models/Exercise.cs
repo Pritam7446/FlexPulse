@@ -12,4 +12,7 @@ public class Exercise
     public string? MuscleGroup { get; set; }
 
     public string? Equipment { get; set; }
+
+    // Estimated calories burned per minute for this exercise (used to calculate WorkoutLog.CaloriesBurned)
+    public double CaloriesPerMinute { get; set; }
 }
