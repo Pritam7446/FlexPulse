@@ -30,7 +30,10 @@
                         <label asp-for="Input.RememberMe" class="form-check-label">@Html.DisplayNameFor(m => m.Input.RememberMe)</label>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Log in</button>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <a asp-area="Identity" asp-page="/Account/ForgotPassword" asp-route-returnUrl="@Model.ReturnUrl">Forgot your password?</a>
+                        <button type="submit" class="btn btn-primary">Log in</button>
+                    </div>
                 </form>
             </div>
         </div>

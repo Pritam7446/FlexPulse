@@ -1,17 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Web;
 
 namespace FlexPulse.Areas.Identity.Pages.Account;
 
 public class ForgotPasswordModel : PageModel
 {
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IEmailSender _emailSender;
 
-    public ForgotPasswordModel(UserManager<IdentityUser> userManager)
+    public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender)
     {
         _userManager = userManager;
+        _emailSender = emailSender;
     }
 
     [BindProperty]
@@ -42,7 +46,15 @@ public class ForgotPasswordModel : PageModel
             return RedirectToPage("ForgotPasswordConfirmation");
         }
 
-        // In a real app, generate and send email with reset link
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var callbackUrl = Url.Page(
+            "/Account/ResetPassword",
+            pageHandler: null,
+            values: new { area = "Identity", code = HttpUtility.UrlEncode(token), email = Input.Email },
+            protocol: Request.Scheme);
+
+        await _emailSender.SendEmailAsync(Input.Email, "Reset Password", $"Please reset your password by <a href='{callbackUrl}'>clicking here</a>.");
+
         return RedirectToPage("ForgotPasswordConfirmation");
     }
 }
