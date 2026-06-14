@@ -37,10 +37,10 @@ namespace FlexPulse.Controllers
             }
             else
             {
-                // anonymous: show global totals
-                totalSessions = await _db.WorkoutLogs.CountAsync();
-                activeMinutes = await _db.WorkoutLogs.SumAsync(w => (int?)w.DurationMinutes) ?? 0;
-                calories = await _db.WorkoutLogs.SumAsync(w => (int?)w.CaloriesBurned) ?? 0;
+                // anonymous: do not show any personal or global data
+                totalSessions = 0;
+                activeMinutes = 0;
+                calories = 0;
             }
 
             var vm = new FlexPulse.ViewModels.DashboardViewModel
