@@ -54,10 +54,7 @@ namespace FlexPulse.Controllers
             return View(vm);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        // Privacy page removed - link removed from layout
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

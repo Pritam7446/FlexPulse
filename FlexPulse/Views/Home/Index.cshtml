@@ -63,27 +63,45 @@ else
     </div>
 
     <div class="container mt-4">
+        <div class="hero mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-1">Welcome to FlexPulse</h2>
+                    <p class="mb-0 text-muted">Track workouts, measure active minutes, and estimate calories burned. Sign in to view and manage your personal logs.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">Get Started</a>
+                </div>
+            </div>
+        </div>
+
         <h3>Exercises</h3>
         @if (Model?.Exercises?.Any() ?? false)
         {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Muscle Group</th>
-                        <th>Equipment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var ex in Model.Exercises) {
-                        <tr>
-                            <td>@ex.Name</td>
-                            <td>@ex.MuscleGroup</td>
-                            <td>@ex.Equipment</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="exercise-grid mt-3">
+                @foreach (var ex in Model.Exercises) {
+                    var stripColor = ex.MuscleGroup?.ToLower() switch
+                    {
+                        "chest" => "#ff7b7b",
+                        "back" => "#7bbcff",
+                        "legs" => "#8affb3",
+                        "shoulders" => "#ffd27b",
+                        "arms" => "#d6a8ff",
+                        "core" => "#7be0ff",
+                        _ => "#cbd5e1"
+                    };
+                    <div class="exercise-card">
+                        <div class="card shadow-sm">
+                            <div class="group-strip" style="background-color:@stripColor"></div>
+                            <div class="card-body">
+                                <h5 class="card-title">@ex.Name <span class="badge bg-light text-dark badge-group">@ex.MuscleGroup</span></h5>
+                                <p class="exercise-meta mb-1">@ex.Equipment</p>
+                                <p class="mb-0"><strong>@string.Format("{0:0.##}", ex.CaloriesPerMinute)</strong> kcal / min</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         }
         else
         {
