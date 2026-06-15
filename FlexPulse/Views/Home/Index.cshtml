@@ -69,7 +69,13 @@ else
                     <p class="mb-0 text-muted">Track workouts, measure active minutes, and estimate calories burned. Sign in to view and manage your personal logs.</p>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">Get Started</a>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Admin">Admin Login</a>
+                        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/WorkoutLogs">Member Login</a>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">New member? <a asp-area="Identity" asp-page="/Account/Register">Register</a></small>
+                    </div>
                 </div>
             </div>
         </div>

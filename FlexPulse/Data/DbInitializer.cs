@@ -75,6 +75,29 @@ public static class DbInitializer
             userManager.AddToRoleAsync(demoUser, memberRole).GetAwaiter().GetResult();
         }
 
+        // Ensure Admin role and create an admin user
+        var adminRole = "Admin";
+        if (!roleManager.RoleExistsAsync(adminRole).GetAwaiter().GetResult())
+        {
+            roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(adminRole)).GetAwaiter().GetResult();
+        }
+
+        var adminEmail = "admin@flexpulse.local";
+        var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
+        if (adminUser == null)
+        {
+            adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+            var result = userManager.CreateAsync(adminUser, "AdminP@ssw0rd!").GetAwaiter().GetResult();
+            if (!result.Succeeded)
+            {
+                throw new Exception("Failed to create admin user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
+        if (!userManager.IsInRoleAsync(adminUser, adminRole).GetAwaiter().GetResult())
+        {
+            userManager.AddToRoleAsync(adminUser, adminRole).GetAwaiter().GetResult();
+        }
+
         // Seed demo logs referencing exercises from the database
         var dbExercises = context.Exercises.OrderBy(e => e.Id).Take(3).ToList();
         if (dbExercises.Count >= 3)
