@@ -2,54 +2,115 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
+@if (User?.Identity?.IsAuthenticated ?? false)
+{
+    <div class="container mt-4">
+        <h1>Dashboard</h1>
 
-<div class="container mt-4">
-    <h1>Dashboard</h1>
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Sessions</h5>
+                        <p class="card-text display-6">@Model.TotalSessions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Minutes</h5>
+                        <p class="card-text display-6">@Model.ActiveMinutes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Calories Burned</h5>
+                        <p class="card-text display-6">@Model.Calories</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="row mt-3">
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Total Sessions</h5>
-                    <p class="card-text display-6">@Model.TotalSessions</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Active Minutes</h5>
-                    <p class="card-text display-6">@Model.ActiveMinutes</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Calories Burned</h5>
-                    <p class="card-text display-6">@Model.Calories</p>
-                </div>
-            </div>
-        </div>
+        <h3 class="mt-4">Exercises</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Muscle Group</th>
+                    <th>Equipment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ex in Model.Exercises) {
+                    <tr>
+                        <td>@ex.Name</td>
+                        <td>@ex.MuscleGroup</td>
+                        <td>@ex.Equipment</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="container mt-4 text-center">
+        <h1>Welcome to FlexPulse</h1>
     </div>
 
-    <h3 class="mt-4">Exercises</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Muscle Group</th>
-                <th>Equipment</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var ex in Model.Exercises) {
-                <tr>
-                    <td>@ex.Name</td>
-                    <td>@ex.MuscleGroup</td>
-                    <td>@ex.Equipment</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+    <div class="container mt-4">
+        <div class="hero mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-1">Welcome to FlexPulse</h2>
+                    <p class="mb-0 text-muted">Track workouts, measure active minutes, and estimate calories burned. Sign in to view and manage your personal logs.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="d-flex justify-content-end gap-2">
+                        <a class="btn btn-outline-secondary" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Admin">Admin Login</a>
+                        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/WorkoutLogs">Member Login</a>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">New member? <a asp-area="Identity" asp-page="/Account/Register">Register</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Exercises</h3>
+        @if (Model?.Exercises?.Any() ?? false)
+        {
+            <div class="exercise-grid mt-3">
+                @foreach (var ex in Model.Exercises) {
+                    var stripColor = ex.MuscleGroup?.ToLower() switch
+                    {
+                        "chest" => "#ff7b7b",
+                        "back" => "#7bbcff",
+                        "legs" => "#8affb3",
+                        "shoulders" => "#ffd27b",
+                        "arms" => "#d6a8ff",
+                        "core" => "#7be0ff",
+                        _ => "#cbd5e1"
+                    };
+                    <div class="exercise-card">
+                        <div class="card shadow-sm">
+                            <div class="group-strip" style="background-color:@stripColor"></div>
+                            <div class="card-body">
+                                <h5 class="card-title">@ex.Name <span class="badge bg-light text-dark badge-group">@ex.MuscleGroup</span></h5>
+                                <p class="exercise-meta mb-1">@ex.Equipment</p>
+                                <p class="mb-0"><strong>@string.Format("{0:0.##}", ex.CaloriesPerMinute)</strong> kcal / min</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>No exercises available.</p>
+        }
+    </div>
+}

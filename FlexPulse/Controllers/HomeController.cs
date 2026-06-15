@@ -37,10 +37,10 @@ namespace FlexPulse.Controllers
             }
             else
             {
-                // anonymous: show global totals
-                totalSessions = await _db.WorkoutLogs.CountAsync();
-                activeMinutes = await _db.WorkoutLogs.SumAsync(w => (int?)w.DurationMinutes) ?? 0;
-                calories = await _db.WorkoutLogs.SumAsync(w => (int?)w.CaloriesBurned) ?? 0;
+                // anonymous: do not show any personal or global data
+                totalSessions = 0;
+                activeMinutes = 0;
+                calories = 0;
             }
 
             var vm = new FlexPulse.ViewModels.DashboardViewModel
@@ -54,10 +54,7 @@ namespace FlexPulse.Controllers
             return View(vm);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        // Privacy page removed - link removed from layout
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

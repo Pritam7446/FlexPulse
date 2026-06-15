@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Web;
 
 namespace FlexPulse.Areas.Identity.Pages.Account;
 
@@ -53,7 +54,17 @@ public class ResetPasswordModel : PageModel
             return RedirectToPage("ResetPasswordConfirmation");
         }
 
-        // In a real app, decode code and reset password
-        return RedirectToPage("ResetPasswordConfirmation");
+        var code = HttpUtility.UrlDecode(Input.Code);
+        var result = await _userManager.ResetPasswordAsync(user, code!, Input.Password);
+        if (result.Succeeded)
+        {
+            return RedirectToPage("ResetPasswordConfirmation");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return Page();
     }
 }

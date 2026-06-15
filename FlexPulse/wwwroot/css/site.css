@@ -20,3 +20,47 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Hero / welcome area */
+.hero {
+  background: linear-gradient(135deg, #f8fbff 0%, #e9f4ff 100%);
+  padding: 2.5rem 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 18px rgba(40, 60, 80, 0.06);
+}
+
+/* Exercise cards */
+.exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.exercise-card .card {
+  height: 100%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.exercise-card .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(32, 60, 100, 0.12);
+}
+.exercise-meta {
+  font-size: 0.9rem;
+  color: #586069;
+}
+
+/* Table improvements fallback */
+.table-striped tbody tr:hover {
+  background-color: #f5faff;
+}
+
+/* Colored group strip shown at top of exercise cards */
+.group-strip {
+  height: 6px;
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+}
+
+.badge-group {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+}

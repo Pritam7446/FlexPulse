@@ -15,6 +15,9 @@ builder.Services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.IdentityUser>(
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<FlexPulse.Data.ApplicationDbContext>();
 
+// Development IEmailSender implementation
+builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, FlexPulse.Services.EmailSender>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
