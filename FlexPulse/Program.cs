@@ -31,6 +31,21 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Block any requests to Privacy routes (return 404) to ensure privacy page is removed globally
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value ?? string.Empty;
+    if (path.StartsWith("/Privacy", StringComparison.OrdinalIgnoreCase) ||
+        path.StartsWith("/Home/Privacy", StringComparison.OrdinalIgnoreCase))
+    {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsync("Not Found");
+        return;
+    }
+
+    await next();
+});
+
 app.UseRouting();
 
 app.UseAuthentication();
