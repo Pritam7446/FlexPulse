@@ -12,6 +12,7 @@
                 <h2 class="card-title">@ViewData["Title"]</h2>
 
                 <form method="post" novalidate>
+                    @Html.AntiForgeryToken()
                     <div asp-validation-summary="All" class="text-danger"></div>
 
                     <div class="mb-3">
@@ -52,6 +53,10 @@
                     @if (TempData["AuthError"] != null)
                     {
                         <div class="alert alert-danger mt-2">@TempData["AuthError"]</div>
+                    }
+                    @if (ViewData["AuthError"] != null)
+                    {
+                        <div class="alert alert-danger mt-2">@ViewData["AuthError"]</div>
                     }
                 </form>
             </div>
