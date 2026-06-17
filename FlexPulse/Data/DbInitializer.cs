@@ -15,39 +15,49 @@ public static class DbInitializer
 
         context.Database.Migrate();
 
-        if (!context.Exercises.Any())
+        // Seed a canonical set of exercises without duplicating existing entries.
+        var seedExercises = new List<Exercise>
         {
-            var exercises = new List<Exercise>
-            {
-                new Exercise { Name = "Squat", MuscleGroup = "Legs", Equipment = "Barbell", CaloriesPerMinute = 8.0 },
-                new Exercise { Name = "Bench Press", MuscleGroup = "Chest", Equipment = "Barbell", CaloriesPerMinute = 7.0 },
-                new Exercise { Name = "Pull Up", MuscleGroup = "Back", Equipment = "Bodyweight", CaloriesPerMinute = 6.5 }
-            };
+            new Exercise { Name = "Squat", MuscleGroup = "Legs", Equipment = "Barbell", CaloriesPerMinute = 8.0 },
+            new Exercise { Name = "Bench Press", MuscleGroup = "Chest", Equipment = "Barbell", CaloriesPerMinute = 7.0 },
+            new Exercise { Name = "Pull Up", MuscleGroup = "Back", Equipment = "Bodyweight", CaloriesPerMinute = 6.5 },
+            new Exercise { Name = "Deadlift", MuscleGroup = "Back", Equipment = "Barbell", CaloriesPerMinute = 8.5 },
+            new Exercise { Name = "Overhead Press", MuscleGroup = "Shoulders", Equipment = "Barbell", CaloriesPerMinute = 6.8 },
+            new Exercise { Name = "Lunge", MuscleGroup = "Legs", Equipment = "Bodyweight", CaloriesPerMinute = 6.0 },
+            new Exercise { Name = "Bicep Curl", MuscleGroup = "Arms", Equipment = "Dumbbell", CaloriesPerMinute = 4.2 },
+            new Exercise { Name = "Tricep Dip", MuscleGroup = "Arms", Equipment = "Bodyweight", CaloriesPerMinute = 5.0 },
+            new Exercise { Name = "Plank", MuscleGroup = "Core", Equipment = "Bodyweight", CaloriesPerMinute = 3.5 },
+            new Exercise { Name = "Burpee", MuscleGroup = "Full Body", Equipment = "Bodyweight", CaloriesPerMinute = 10.0 },
+            new Exercise { Name = "Rowing", MuscleGroup = "Back", Equipment = "Machine", CaloriesPerMinute = 9.0 },
+            new Exercise { Name = "Cycling", MuscleGroup = "Legs", Equipment = "Machine", CaloriesPerMinute = 7.5 }
+        };
 
-            context.Exercises.AddRange(exercises);
-            context.SaveChanges();
-        }
-        else
+        var existingList = context.Exercises.ToList();
+        var changedSeed = false;
+
+        foreach (var seed in seedExercises)
         {
-            // If the CaloriesPerMinute column was added after initial seeding, update existing rows with sensible defaults if unset
-            var nameMap = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
+            var match = existingList.FirstOrDefault(e => string.Equals(e.Name?.Trim(), seed.Name, StringComparison.OrdinalIgnoreCase));
+            if (match == null)
             {
-                { "Squat", 8.0 },
-                { "Bench Press", 7.0 },
-                { "Pull Up", 6.5 }
-            };
-
-            var existing = context.Exercises.Where(e => e.CaloriesPerMinute == 0.0).ToList();
-            var changed = false;
-            foreach (var ex in existing)
+                context.Exercises.Add(seed);
+                existingList.Add(seed);
+                changedSeed = true;
+            }
+            else
             {
-                if (nameMap.TryGetValue(ex.Name, out var val))
+                // If existing entry has no calories set, update it from seed
+                if (match.CaloriesPerMinute == 0.0 && seed.CaloriesPerMinute > 0)
                 {
-                    ex.CaloriesPerMinute = val;
-                    changed = true;
+                    match.CaloriesPerMinute = seed.CaloriesPerMinute;
+                    changedSeed = true;
                 }
             }
-            if (changed) context.SaveChanges();
+        }
+
+        if (changedSeed)
+        {
+            context.SaveChanges();
         }
 
         // Create a demo Identity user

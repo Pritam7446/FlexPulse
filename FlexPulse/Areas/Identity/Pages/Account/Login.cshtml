@@ -1,6 +1,7 @@
 @page
 @model FlexPulse.Areas.Identity.Pages.Account.LoginModel
 @{
+    Layout = "/Areas/Identity/Pages/Shared/_Layout.cshtml";
     ViewData["Title"] = "Log in";
 }
 
@@ -11,6 +12,7 @@
                 <h2 class="card-title">@ViewData["Title"]</h2>
 
                 <form method="post" novalidate>
+                    @Html.AntiForgeryToken()
                     <div asp-validation-summary="All" class="text-danger"></div>
 
                     <div class="mb-3">
@@ -33,6 +35,9 @@
                     <div class="d-flex justify-content-end align-items-center mb-3">
                         <button type="submit" class="btn btn-primary">Log in</button>
                     </div>
+
+                    @* ModelState errors are rendered via asp-validation-summary above; removed manual duplication *@
+                    @* Only render ModelState-based errors to avoid duplicates *@
                 </form>
             </div>
         </div>

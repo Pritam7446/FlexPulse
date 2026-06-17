@@ -1,0 +1,42 @@
+@model IEnumerable<FlexPulse.Models.Exercise>
+@{
+    ViewData["Title"] = "Exercises";
+}
+
+<h1>Exercises</h1>
+
+<p>
+    @if (User?.IsInRole("Admin") == true) {
+        <a asp-action="Create" class="btn btn-primary">Add Exercise</a>
+    }
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Muscle Group</th>
+            <th>Equipment</th>
+            <th>Calories / min</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ex in Model)
+        {
+            <tr>
+                <td>@ex.Name</td>
+                <td>@ex.MuscleGroup</td>
+                <td>@ex.Equipment</td>
+                <td>@string.Format("{0:0.##}", ex.CaloriesPerMinute)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@ex.Id" class="btn btn-sm btn-link">Details</a>
+                    @if (User?.IsInRole("Admin") == true) {
+                        <a asp-action="Edit" asp-route-id="@ex.Id" class="btn btn-sm btn-secondary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@ex.Id" class="btn btn-sm btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
