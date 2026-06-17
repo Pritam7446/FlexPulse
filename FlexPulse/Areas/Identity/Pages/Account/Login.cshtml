@@ -36,28 +36,8 @@
                         <button type="submit" class="btn btn-primary">Log in</button>
                     </div>
 
-                    @{
-                        var errors = ViewData.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
-                    }
-                    @if (errors.Any())
-                    {
-                        <div class="alert alert-danger mt-2" role="alert">
-                            <ul class="mb-0">
-                                @foreach (var err in errors)
-                                {
-                                    <li>@err</li>
-                                }
-                            </ul>
-                        </div>
-                    }
-                    @if (TempData["AuthError"] != null)
-                    {
-                        <div class="alert alert-danger mt-2">@TempData["AuthError"]</div>
-                    }
-                    @if (ViewData["AuthError"] != null)
-                    {
-                        <div class="alert alert-danger mt-2">@ViewData["AuthError"]</div>
-                    }
+                    @* ModelState errors are rendered via asp-validation-summary above; removed manual duplication *@
+                    @* Only render ModelState-based errors to avoid duplicates *@
                 </form>
             </div>
         </div>

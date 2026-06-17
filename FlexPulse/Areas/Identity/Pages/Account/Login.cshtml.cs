@@ -65,8 +65,6 @@ public class LoginModel : PageModel
                     // Admins should use Admin Login
                     var msg = "Admin accounts must use the Admin Login button.";
                     ModelState.AddModelError(string.Empty, msg);
-                    TempData["AuthError"] = msg;
-                    ViewData["AuthError"] = msg;
                     _logger?.LogWarning("Admin attempted member login: {Email}", Input.Email);
                     return Page();
                 }
@@ -76,8 +74,6 @@ public class LoginModel : PageModel
                     // Non-admins cannot sign into admin area
                     var msg = "You do not have permissions to access the admin area.";
                     ModelState.AddModelError(string.Empty, msg);
-                    TempData["AuthError"] = msg;
-                    ViewData["AuthError"] = msg;
                     _logger?.LogWarning("Non-admin attempted admin login: {Email}", Input.Email);
                     return Page();
                 }

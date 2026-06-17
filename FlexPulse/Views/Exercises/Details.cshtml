@@ -1,0 +1,19 @@
+@model FlexPulse.Models.Exercise
+@{
+    ViewData["Title"] = "Exercise Details";
+}
+
+<h1>@Model.Name</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Muscle Group</dt>
+    <dd class="col-sm-9">@Model.MuscleGroup</dd>
+
+    <dt class="col-sm-3">Equipment</dt>
+    <dd class="col-sm-9">@Model.Equipment</dd>
+
+    <dt class="col-sm-3">Calories / min</dt>
+    <dd class="col-sm-9">@string.Format("{0:0.##}", Model.CaloriesPerMinute)</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-link">Back to list</a>
