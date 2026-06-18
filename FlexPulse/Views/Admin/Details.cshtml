@@ -1,0 +1,20 @@
+@model FlexPulse.ViewModels.AdminUserDetailsViewModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h1>User Details</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Email</h5>
+        <p class="mb-1"><strong>Username:</strong> @Model.UserName</p>
+        <p class="mb-1"><strong>Full name:</strong> @Model.FullName</p>
+        <p class="mb-1"><strong>Date of birth:</strong> @(Model.DateOfBirth?.ToString("yyyy-MM-dd") ?? "-")</p>
+        <p class="mb-1"><strong>Gender:</strong> @(Model.Gender ?? "-")</p>
+        <p class="mb-1"><strong>Mobile:</strong> @(Model.MobileNumber ?? "-")</p>
+        <p class="mb-1"><strong>Roles:</strong> @string.Join(", ", Model.Roles)</p>
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-link">Back</a>

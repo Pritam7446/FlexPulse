@@ -92,15 +92,29 @@ public static class DbInitializer
             roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(adminRole)).GetAwaiter().GetResult();
         }
 
-        var adminEmail = "admin@flexpulse.local";
+        var adminEmail = "admin@flexpulse.com";
         var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
         if (adminUser == null)
         {
             adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
-            var result = userManager.CreateAsync(adminUser, "AdminP@ssw0rd!").GetAwaiter().GetResult();
+            var result = userManager.CreateAsync(adminUser, "Bb3$dddd").GetAwaiter().GetResult();
             if (!result.Succeeded)
             {
                 throw new Exception("Failed to create admin user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
+        else
+        {
+            // Ensure admin has the seeded password (use reset token) - useful during development when DB already exists
+            try
+            {
+                var token = userManager.GeneratePasswordResetTokenAsync(adminUser).GetAwaiter().GetResult();
+                var resetResult = userManager.ResetPasswordAsync(adminUser, token, "Bb3$dddd").GetAwaiter().GetResult();
+                // ignore failures in production; this is a development convenience
+            }
+            catch
+            {
+                // swallow exceptions - do not block app startup
             }
         }
         if (!userManager.IsInRoleAsync(adminUser, adminRole).GetAwaiter().GetResult())

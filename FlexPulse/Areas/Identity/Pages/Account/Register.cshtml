@@ -20,6 +20,35 @@
                     </div>
 
                     <div class="mb-3">
+                        <label asp-for="Input.FullName" class="form-label">@Html.DisplayNameFor(m => m.Input.FullName)</label>
+                        <input asp-for="Input.FullName" class="form-control" />
+                        <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.DateOfBirth" class="form-label">@Html.DisplayNameFor(m => m.Input.DateOfBirth)</label>
+                        <input asp-for="Input.DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Gender" class="form-label">@Html.DisplayNameFor(m => m.Input.Gender)</label>
+                        <select asp-for="Input.Gender" class="form-select">
+                            <option value="">Select...</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                        <span asp-validation-for="Input.Gender" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.MobileNumber" class="form-label">@Html.DisplayNameFor(m => m.Input.MobileNumber)</label>
+                        <input asp-for="Input.MobileNumber" class="form-control" />
+                        <span asp-validation-for="Input.MobileNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
                         <label asp-for="Input.Password" class="form-label">@Html.DisplayNameFor(m => m.Input.Password)</label>
                         <input asp-for="Input.Password" class="form-control" />
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
