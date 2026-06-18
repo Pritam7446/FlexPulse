@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using FlexPulse.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlexPulse.Controllers;
 
@@ -10,11 +11,13 @@ public class AdminController : Controller
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly FlexPulse.Data.ApplicationDbContext _db;
 
-    public AdminController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+    public AdminController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, FlexPulse.Data.ApplicationDbContext db)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
     public IActionResult Index()
@@ -56,6 +59,18 @@ public class AdminController : Controller
         }
 
         details.Roles = (await _userManager.GetRolesAsync(user)).ToList();
+
+        // load workout logs for that user
+        var logs = await _db.WorkoutLogs
+            .Where(w => w.UserId == user.Id)
+            .Include(w => w.Exercise)
+            .OrderByDescending(w => w.Date)
+            .Select(w => new {
+                w.Date, w.DurationMinutes, w.CaloriesBurned, ExerciseName = w.Exercise.Name
+            })
+            .ToListAsync();
+
+        ViewData["WorkoutLogs"] = logs;
 
         return View(details);
     }

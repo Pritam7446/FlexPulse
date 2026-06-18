@@ -18,3 +18,24 @@
 </div>
 
 <a asp-action="Index" class="btn btn-link">Back</a>
+
+@if (ViewData["WorkoutLogs"] is IEnumerable<dynamic> logs && logs.Any())
+{
+    <h3 class="mt-4">Workout Logs</h3>
+    <table class="table table-sm">
+        <thead>
+            <tr><th>Date</th><th>Exercise</th><th>Duration (min)</th><th>Calories</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var l in logs)
+        {
+            <tr>
+                <td>@((DateTime)l.Date).ToString("yyyy-MM-dd")</td>
+                <td>@l.ExerciseName</td>
+                <td>@l.DurationMinutes</td>
+                <td>@l.CaloriesBurned</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
