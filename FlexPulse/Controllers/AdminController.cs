@@ -60,17 +60,20 @@ public class AdminController : Controller
 
         details.Roles = (await _userManager.GetRolesAsync(user)).ToList();
 
-        // load workout logs for that user
+        // load workout logs for that user (strongly typed)
         var logs = await _db.WorkoutLogs
             .Where(w => w.UserId == user.Id)
             .Include(w => w.Exercise)
             .OrderByDescending(w => w.Date)
-            .Select(w => new {
-                w.Date, w.DurationMinutes, w.CaloriesBurned, ExerciseName = w.Exercise.Name
+            .Select(w => new ViewModels.AdminUserWorkoutLogViewModel {
+                Date = w.Date,
+                DurationMinutes = w.DurationMinutes,
+                CaloriesBurned = w.CaloriesBurned,
+                ExerciseName = w.Exercise != null ? w.Exercise.Name : ""
             })
             .ToListAsync();
 
-        ViewData["WorkoutLogs"] = logs;
+        details.WorkoutLogs = logs;
 
         return View(details);
     }
