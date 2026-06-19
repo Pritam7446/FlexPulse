@@ -79,7 +79,9 @@ public class LoginModel : PageModel
                 }
             }
 
-            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+            // Create a non-persistent session cookie so the user is signed out when the browser is closed.
+            // Ignore the RememberMe value and always use a session cookie.
+            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, isPersistent: false, lockoutOnFailure: true);
             _logger?.LogInformation("Login attempt for {Email}. Succeeded={Succeeded} IsLockedOut={IsLockedOut} RequiresTwoFactor={RequiresTwoFactor} IsNotAllowed={IsNotAllowed}", Input.Email, result.Succeeded, result.IsLockedOut, result.RequiresTwoFactor, result.IsNotAllowed);
             if (result.Succeeded)
             {
