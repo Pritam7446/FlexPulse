@@ -60,67 +60,59 @@ public static class DbInitializer
             context.SaveChanges();
         }
 
-        // Create a demo Identity user
-        var demoEmail = "demo@flexpulse.local";
-        var demoUser = userManager.FindByEmailAsync(demoEmail).GetAwaiter().GetResult();
-        if (demoUser == null)
-        {
-            demoUser = new IdentityUser { UserName = demoEmail, Email = demoEmail, EmailConfirmed = true };
-            var result = userManager.CreateAsync(demoUser, "P@ssw0rd!").GetAwaiter().GetResult();
-            if (!result.Succeeded)
-            {
-                throw new Exception("Failed to create demo user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-        }
-
-        // Ensure roles and assign demo user to Member role
+        // Ensure roles exist
         var roleManager = scoped.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
         var memberRole = "Member";
         if (!roleManager.RoleExistsAsync(memberRole).GetAwaiter().GetResult())
         {
             roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(memberRole)).GetAwaiter().GetResult();
         }
-        if (!userManager.IsInRoleAsync(demoUser, memberRole).GetAwaiter().GetResult())
-        {
-            userManager.AddToRoleAsync(demoUser, memberRole).GetAwaiter().GetResult();
-        }
 
-        // Ensure Admin role and create an admin user
         var adminRole = "Admin";
         if (!roleManager.RoleExistsAsync(adminRole).GetAwaiter().GetResult())
         {
             roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(adminRole)).GetAwaiter().GetResult();
         }
 
-        var adminEmail = "admin@flexpulse.local";
-        var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
-        if (adminUser == null)
+        // Only create seed users when the user table is empty. This prevents re-creating users that
+        // were intentionally deleted later (for example by an admin). If you want the demo/admin
+        // to always exist, keep the original behavior.
+        if (!userManager.Users.Any())
         {
-            adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
-            var result = userManager.CreateAsync(adminUser, "AdminP@ssw0rd!").GetAwaiter().GetResult();
-            if (!result.Succeeded)
+            // Create a demo Identity user
+            var demoEmail = "demo@flexpulse.local";
+            var demoUser = new IdentityUser { UserName = demoEmail, Email = demoEmail, EmailConfirmed = true };
+            var demoResult = userManager.CreateAsync(demoUser, "P@ssw0rd!").GetAwaiter().GetResult();
+            if (!demoResult.Succeeded)
             {
-                throw new Exception("Failed to create admin user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new Exception("Failed to create demo user: " + string.Join(", ", demoResult.Errors.Select(e => e.Description)));
             }
-        }
-        if (!userManager.IsInRoleAsync(adminUser, adminRole).GetAwaiter().GetResult())
-        {
-            userManager.AddToRoleAsync(adminUser, adminRole).GetAwaiter().GetResult();
-        }
+            userManager.AddToRoleAsync(demoUser, memberRole).GetAwaiter().GetResult();
 
-        // Seed demo logs referencing exercises from the database
-        var dbExercises = context.Exercises.OrderBy(e => e.Id).Take(3).ToList();
-        if (dbExercises.Count >= 3)
-        {
-            var logs = new List<WorkoutLog>
+            // Create an admin user for development convenience
+            var adminEmail = "admin@flexpulse.com";
+            var adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+            var adminResult = userManager.CreateAsync(adminUser, "Bb3$dddd").GetAwaiter().GetResult();
+            if (!adminResult.Succeeded)
             {
-                new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[0].Id, Date = DateTime.UtcNow.Date.AddDays(-2), DurationMinutes = 45, CaloriesBurned = (int)Math.Round(dbExercises[0].CaloriesPerMinute * 45) },
-                new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[1].Id, Date = DateTime.UtcNow.Date.AddDays(-1), DurationMinutes = 30, CaloriesBurned = (int)Math.Round(dbExercises[1].CaloriesPerMinute * 30) },
-                new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[2].Id, Date = DateTime.UtcNow.Date, DurationMinutes = 20, CaloriesBurned = (int)Math.Round(dbExercises[2].CaloriesPerMinute * 20) }
-            };
+                throw new Exception("Failed to create admin user: " + string.Join(", ", adminResult.Errors.Select(e => e.Description)));
+            }
+            userManager.AddToRoleAsync(adminUser, adminRole).GetAwaiter().GetResult();
 
-            context.WorkoutLogs.AddRange(logs);
-            context.SaveChanges();
+            // Seed demo logs referencing exercises from the database
+            var dbExercises = context.Exercises.OrderBy(e => e.Id).Take(3).ToList();
+            if (dbExercises.Count >= 3)
+            {
+                var logs = new List<WorkoutLog>
+                {
+                    new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[0].Id, Date = DateTime.UtcNow.Date.AddDays(-2), DurationMinutes = 45, CaloriesBurned = (int)Math.Round(dbExercises[0].CaloriesPerMinute * 45) },
+                    new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[1].Id, Date = DateTime.UtcNow.Date.AddDays(-1), DurationMinutes = 30, CaloriesBurned = (int)Math.Round(dbExercises[1].CaloriesPerMinute * 30) },
+                    new WorkoutLog { UserId = demoUser.Id, ExerciseId = dbExercises[2].Id, Date = DateTime.UtcNow.Date, DurationMinutes = 20, CaloriesBurned = (int)Math.Round(dbExercises[2].CaloriesPerMinute * 20) }
+                };
+
+                context.WorkoutLogs.AddRange(logs);
+                context.SaveChanges();
+            }
         }
     }
 }
