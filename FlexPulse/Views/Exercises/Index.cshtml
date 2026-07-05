@@ -32,7 +32,8 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@ex.Id" class="btn btn-sm btn-link">Details</a>
                     @if (User?.IsInRole("Admin") == true) {
-                        <a asp-action="Edit" asp-route-id="@ex.Id" class="btn btn-sm btn-secondary">Edit</a>
+                        <!-- Use the Razor Pages admin edit when available -->
+                        <a asp-page="/Admin/Exercises/Edit" asp-route-id="@ex.Id" class="btn btn-sm btn-secondary">Edit</a>
                         <a asp-action="Delete" asp-route-id="@ex.Id" class="btn btn-sm btn-danger">Delete</a>
                     }
                 </td>

@@ -11,11 +11,13 @@ public class WorkoutLogsController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly SignInManager<IdentityUser> _signInManager;
 
-    public WorkoutLogsController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+    public WorkoutLogsController(ApplicationDbContext db, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
     {
         _db = db;
         _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     public async Task<IActionResult> Edit(int id)
@@ -115,7 +117,9 @@ public class WorkoutLogsController : Controller
 
         _db.WorkoutLogs.Add(model);
         await _db.SaveChangesAsync();
-        return RedirectToAction("Index");
+        // Sign the user out after the run stops (workout log saved)
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpPost]

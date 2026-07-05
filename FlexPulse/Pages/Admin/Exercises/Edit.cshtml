@@ -1,0 +1,34 @@
+@page "{id:int}"
+@model FlexPulse.Pages.Admin.Exercises.EditModel
+@{
+    ViewData["Title"] = "Edit Exercise";
+}
+
+<h1>Edit Exercise</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="Exercise.Id" />
+    <div class="mb-3">
+        <label asp-for="Exercise.Name" class="form-label"></label>
+        <input asp-for="Exercise.Name" class="form-control" />
+        <span asp-validation-for="Exercise.Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Exercise.MuscleGroup" class="form-label"></label>
+        <input asp-for="Exercise.MuscleGroup" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Exercise.Equipment" class="form-label"></label>
+        <input asp-for="Exercise.Equipment" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Exercise.CaloriesPerMinute" class="form-label"></label>
+        <input asp-for="Exercise.CaloriesPerMinute" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="/Exercises" class="btn btn-link">Cancel</a>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
