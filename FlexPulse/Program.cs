@@ -16,7 +16,8 @@ builder.Services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.IdentityUser>(
     .AddEntityFrameworkStores<FlexPulse.Data.ApplicationDbContext>();
 
 // Development IEmailSender implementation
-builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, FlexPulse.Services.EmailSender>();
+// Email sending, forgot-password, reset-password and email confirmation flows removed.
+// No IEmailSender is registered.
 
 var app = builder.Build();
 
